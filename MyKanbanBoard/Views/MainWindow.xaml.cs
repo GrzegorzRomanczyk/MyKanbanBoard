@@ -1,9 +1,9 @@
-﻿using MyKanbanBoard.ViewModels;
+﻿using MyKanbanBoard.Models;
+using MyKanbanBoard.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -31,32 +31,35 @@ namespace MyKanbanBoard.Views
         private void Task_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.LeftButton != MouseButtonState.Pressed)
-            {
-                return;
-            }
-            var frameworkElement = sender as FrameworkElement;
-            var task = frameworkElement?.DataContext as TaskViewModel;
-            if (task == null) 
-            {
                 return;
 
-            }
+            var fe = sender as FrameworkElement;
+            var task = fe?.DataContext as TaskViewModel;
+            if (task == null) return;
 
-            DragDrop.DoDragDrop(frameworkElement, task, DragDropEffects.Move);
+            DragDrop.DoDragDrop(fe, task, DragDropEffects.Move);
         }
 
-        private void Column_Drop(object sender, DragEventArgs e)
+        private void Cell_Drop(object sender, DragEventArgs e)
         {
             if (!e.Data.GetDataPresent(typeof(TaskViewModel)))
-            {
                 return;
-            }
+
             var task = (TaskViewModel)e.Data.GetData(typeof(TaskViewModel));
-            var targetList = sender as FrameworkElement;
-            var targetColumn = targetList?.DataContext as ColumnViewModel;
+
+            var targetCell = sender as FrameworkElement;
+            var targetStory = targetCell?.DataContext as UserStoryViewModel;
+            if (targetStory == null)
+                return;
+
+            var targetStatusObj = targetCell?.Tag;
+            if (targetStatusObj == null)
+                return;
+
+            var targetStatus = (TaskStatus)targetStatusObj;
 
             var board = DataContext as BoardViewModel;
-            board?.MoveTask(task, targetColumn);
+            board?.MoveTask(task, targetStory, targetStatus);
         }
     }
 }

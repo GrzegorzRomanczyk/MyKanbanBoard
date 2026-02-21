@@ -1,9 +1,11 @@
-﻿using System;
+﻿using MyKanbanBoard.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
-using System.Threading.Tasks;
+
+
 
 namespace MyKanbanBoard.ViewModels
 {
@@ -16,14 +18,26 @@ namespace MyKanbanBoard.ViewModels
             get => title;
             set 
             {
-                title = value; 
+                title = value;
+                OnPropertyChange();
             }
         }
 
-        public TaskViewModel(string title)
+        private TaskStatus status;
+        public TaskStatus Status
         {
-            Title = title;
+            get => status;
+            set 
+            {
+                status = value;
+                OnPropertyChange(); 
+            }
         }
 
+        public TaskViewModel(string title, TaskStatus status)
+        {
+            Title = title;
+            Status = status;
+        }
     }
 }

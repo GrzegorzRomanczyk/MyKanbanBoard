@@ -1,41 +1,53 @@
-﻿using System;
+﻿using MyKanbanBoard.Models;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+
+
 
 namespace MyKanbanBoard.ViewModels
 {
     public class BoardViewModel : ViewModelBase
     {
-        public ObservableCollection<ColumnViewModel> Columns { get; } = new ObservableCollection<ColumnViewModel>();
+
+        public ObservableCollection<UserStoryViewModel> Stories { get; } = new ObservableCollection<UserStoryViewModel>();
 
         public BoardViewModel()
         {
-            var todo = new ColumnViewModel("To Do");
-            todo.Tasks.Add(new TaskViewModel("taks 1"));
-            todo.Tasks.Add(new TaskViewModel("taks 2"));
+            var s1 = new UserStoryViewModel("Story #101: Logowanie");
+            s1.Tasks.Add(new TaskViewModel("UI: formularz", TaskStatus.ToDo));
+            s1.Tasks.Add(new TaskViewModel("API: token", TaskStatus.Active));
 
-            var inProgress = new ColumnViewModel("In Progress");
-            var review = new ColumnViewModel("In Review");
-            var done = new ColumnViewModel("Done");
+            var s2 = new UserStoryViewModel("Story #102: Rejestracja");
+            s2.Tasks.Add(new TaskViewModel("Walidacja hasła", TaskStatus.Paused));
+            s2.Tasks.Add(new TaskViewModel("E2E test", TaskStatus.ToDo));
 
-            Columns.Add(todo);
-            Columns.Add(inProgress);
-            Columns.Add(review);
-            Columns.Add(done);
+            Stories.Add(s1);
+            Stories.Add(s2);
         }
 
-        public void MoveTask(TaskViewModel task, ColumnViewModel targetColumn)
+        public void MoveTask(TaskViewModel task, UserStoryViewModel targetStory, TaskStatus targetStatus)
         {
-            var sourceColumn = Columns.FirstOrDefault(c => c.Tasks.Contains(task));
-            if (sourceColumn == null || targetColumn == null)
-            { 
-                return;
+            if (task == null || targetStory == null) return;
+
+            // znajdź story źródłowe
+            var sourceStory = Stories.FirstOrDefault(s => s.Tasks.Contains(task));
+            if (sourceStory == null) return;
+
+            // przenieś między story (jeśli inne)
+            if (!ReferenceEquals(sourceStory, targetStory))
+            {
+                sourceStory.Tasks.Remove(task);
+                targetStory.Tasks.Add(task);
             }
-            sourceColumn.Tasks.Remove(task);
-            targetColumn.Tasks.Add(task);
+
+            // ustaw status (kolumnę)
+            task.Status = targetStatus;
+
+            sourceStory.RefreshAll();
+            targetStory.RefreshAll();
         }
     }
 }
