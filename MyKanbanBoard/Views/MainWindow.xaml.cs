@@ -27,20 +27,20 @@ namespace MyKanbanBoard.Views
             InitializeComponent();
         }
 
-        private void Task_PreviewMouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton != MouseButtonState.Pressed)
-            {
-                return;
-            }
-            var listbox = sender as ListBox;
-            if (listbox?.SelectedItem == null) 
-            {
-                return;
-            }
+        //private void Task_PreviewMouseMove(object sender, MouseEventArgs e)
+        //{
+        //    if (e.LeftButton != MouseButtonState.Pressed)
+        //    {
+        //        return;
+        //    }
+        //    var listbox = sender as ListBox;
+        //    if (listbox?.SelectedItem == null) 
+        //    {
+        //        return;
+        //    }
 
-            DragDrop.DoDragDrop(listbox, listbox.SelectedItem, DragDropEffects.Move);
-        }
+        //    DragDrop.DoDragDrop(listbox, listbox.SelectedItem, DragDropEffects.Move);
+        //}
 
         private void Task_Drop(object sender, DragEventArgs e)
         {
@@ -54,6 +54,23 @@ namespace MyKanbanBoard.Views
 
             var board = DataContext as BoardViewModel;
             board?.MoveTask(task,targetColumn);
+        }
+
+        private void Task_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton != MouseButtonState.Pressed)
+            {
+                return;
+            }
+            var frameworkElement = sender as FrameworkElement;
+            var task = frameworkElement?.DataContext as TaskViewModel;
+            if (task == null) 
+            {
+                return;
+
+            }
+
+            DragDrop.DoDragDrop(frameworkElement, task, DragDropEffects.Move);
         }
     }
 }
