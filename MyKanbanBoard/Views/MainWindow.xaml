@@ -28,7 +28,9 @@
                     <Border Background="#F3F3F3"
                             Margin="10"
                             Padding="10"
-                            CornerRadius="6">
+                            CornerRadius="6"
+                            AllowDrop="True"
+                            Drop="Column_Drop">
 
                         <StackPanel>
                             <TextBlock Text="{Binding Title}"
@@ -36,12 +38,7 @@
                                        FontWeight="Bold"
                                        Margin="0,0,01,0"/>
 
-                            <ListBox ItemsSource="{Binding Tasks}"
-                                     AllowDrop="True"
-
-                                     Drop="Task_Drop">
-                                
-                                
+                            <ListBox ItemsSource="{Binding Tasks}">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Border Background="White"
