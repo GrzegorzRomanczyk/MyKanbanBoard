@@ -5,15 +5,24 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-
-
 namespace MyKanbanBoard.ViewModels
 {
     public class BoardViewModel : ViewModelBase
     {
+        private string _newStoryTitle;
+        public RelayCommand AddStoryCommand { get; }
+        public string NewStoryTitle
+        {
+            get => _newStoryTitle;
+            set
+            {
+                _newStoryTitle = value;
+                OnPropertyChange();
+                AddStoryCommand?.RaiseCanExecuteChanged();
+            }
+        }
 
         public ObservableCollection<UserStoryViewModel> Stories { get; } = new ObservableCollection<UserStoryViewModel>();
-
         public BoardViewModel()
         {
             var s1 = new UserStoryViewModel("Story #101: Logowanie");
@@ -26,6 +35,18 @@ namespace MyKanbanBoard.ViewModels
 
             Stories.Add(s1);
             Stories.Add(s2);
+
+            AddStoryCommand = new RelayCommand( _ =>
+            {
+                var title = (NewStoryTitle ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    return;
+                }
+                Stories.Add(new UserStoryViewModel(title));
+                NewStoryTitle = "";
+            },
+            _ => !string.IsNullOrWhiteSpace(NewStoryTitle));
         }
 
         public void MoveTask(TaskViewModel task, UserStoryViewModel targetStory, TaskStatus targetStatus)

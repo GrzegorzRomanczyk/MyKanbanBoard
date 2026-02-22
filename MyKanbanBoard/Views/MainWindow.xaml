@@ -15,39 +15,95 @@
         <vm:BoardViewModel />
     </Window.DataContext>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <DockPanel>
+
+        <!-- TOP BAR: add story -->
+        <Border DockPanel.Dock="Top" Padding="10" Background="#FAFAFA">
+            <DockPanel LastChildFill="True">
+
+                <TextBlock Text="User Stories"
+                       FontWeight="Bold"
+                       VerticalAlignment="Center"
+                       Margin="0,0,10,0"/>
+
+                <Button Content="Add"
+                    Width="70"
+                    Margin="8,0,0,0"
+                    DockPanel.Dock="Right"
+                    Command="{Binding AddStoryCommand}"/>
+
+                <TextBox Text="{Binding NewStoryTitle, UpdateSourceTrigger=PropertyChanged}"
+                     Height="28"
+                     VerticalAlignment="Center">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding AddStoryCommand}"/>
+                    </TextBox.InputBindings>
+                </TextBox>
+
+            </DockPanel>
+        </Border>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
         <ItemsControl ItemsSource="{Binding Stories}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
 
                     <Expander IsExpanded="{Binding IsExpanded}" Margin="10">
                         <Expander.Header>
-                            <TextBlock Text="{Binding Title}" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="16"
+                                       FontWeight="Bold" />
                         </Expander.Header>
 
-                        <!-- Wiersz: 4 kolumny statusów -->
-                        <Grid Margin="0,10,0,0">
+                        <!--  Wiersz: 4 kolumny statusów  -->
+                        <Grid Margin="0 10 0 0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
-                                <ColumnDefinition/>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <!-- TO DO -->
-                            <Border Grid.Column="0" Margin="5" Padding="8" Background="#F3F3F3"
+                            <!--  TO DO  -->
+                            <Border Grid.Column="0"
+                                    Margin="5"
+                                    Padding="8"
+                                    Background="#F3F3F3"
                                     AllowDrop="True"
                                     Drop="Cell_Drop"
                                     Tag="{x:Static enums:TaskStatus.ToDo}">
+
                                 <StackPanel>
-                                    <TextBlock Text="To Do" FontWeight="Bold" Margin="0,0,0,6"/>
+
+                                    <!--  Nagłówek + dodawanie  -->
+                                    <DockPanel Margin="0 0 0 6">
+                                        <TextBlock Text="To Do"
+                                                   FontWeight="Bold"
+                                                   DockPanel.Dock="Left" />
+
+                                        <Button Content="＋"
+                                                Width="26"
+                                                Height="26"
+                                                Margin="6 0 0 0"
+                                                DockPanel.Dock="Right"
+                                                Command="{Binding AddTaskCommand}" />
+                                    </DockPanel>
+
+                                    <!--  Pole na tytuł taska  -->
+                                    <TextBox Text="{Binding NewTaskTitle, UpdateSourceTrigger=PropertyChanged}"
+                                             Margin="0 0 0 8"
+                                             Height="28" 
+                                             KeyDown="NewTaskTitle_KeyDown" />
+
                                     <ItemsControl ItemsSource="{Binding ToDoView}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Background="White" Padding="10" Margin="0,0,0,5"
+                                                <Border Background="White"
+                                                        Padding="10"
+                                                        Margin="0 0 0 5"
                                                         CornerRadius="4"
                                                         MouseMove="Task_MouseMove">
-                                                    <TextBlock Text="{Binding Title}"/>
+                                                    <TextBlock Text="{Binding Title}" />
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -55,20 +111,27 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- ACTIVE -->
-                            <Border Grid.Column="1" Margin="5" Padding="8" Background="#F3F3F3"
+                            <!--  ACTIVE  -->
+                            <Border Grid.Column="1"
+                                    Margin="5"
+                                    Padding="8"
+                                    Background="#F3F3F3"
                                     AllowDrop="True"
                                     Drop="Cell_Drop"
                                     Tag="{x:Static enums:TaskStatus.Active}">
                                 <StackPanel>
-                                    <TextBlock Text="Active" FontWeight="Bold" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Active"
+                                               FontWeight="Bold"
+                                               Margin="0 0 0 6" />
                                     <ItemsControl ItemsSource="{Binding ActiveView}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Background="White" Padding="10" Margin="0,0,0,5"
+                                                <Border Background="White"
+                                                        Padding="10"
+                                                        Margin="0 0 0 5"
                                                         CornerRadius="4"
                                                         MouseMove="Task_MouseMove">
-                                                    <TextBlock Text="{Binding Title}"/>
+                                                    <TextBlock Text="{Binding Title}" />
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -76,20 +139,27 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- PAUSED -->
-                            <Border Grid.Column="2" Margin="5" Padding="8" Background="#F3F3F3"
+                            <!--  PAUSED  -->
+                            <Border Grid.Column="2"
+                                    Margin="5"
+                                    Padding="8"
+                                    Background="#F3F3F3"
                                     AllowDrop="True"
                                     Drop="Cell_Drop"
                                     Tag="{x:Static enums:TaskStatus.Paused}">
                                 <StackPanel>
-                                    <TextBlock Text="Paused" FontWeight="Bold" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Paused"
+                                               FontWeight="Bold"
+                                               Margin="0 0 0 6" />
                                     <ItemsControl ItemsSource="{Binding PausedView}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Background="White" Padding="10" Margin="0,0,0,5"
+                                                <Border Background="White"
+                                                        Padding="10"
+                                                        Margin="0 0 0 5"
                                                         CornerRadius="4"
                                                         MouseMove="Task_MouseMove">
-                                                    <TextBlock Text="{Binding Title}"/>
+                                                    <TextBlock Text="{Binding Title}" />
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -97,20 +167,27 @@
                                 </StackPanel>
                             </Border>
 
-                            <!-- DONE -->
-                            <Border Grid.Column="3" Margin="5" Padding="8" Background="#F3F3F3"
+                            <!--  DONE  -->
+                            <Border Grid.Column="3"
+                                    Margin="5"
+                                    Padding="8"
+                                    Background="#F3F3F3"
                                     AllowDrop="True"
                                     Drop="Cell_Drop"
                                     Tag="{x:Static enums:TaskStatus.Done}">
                                 <StackPanel>
-                                    <TextBlock Text="Done" FontWeight="Bold" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Done"
+                                               FontWeight="Bold"
+                                               Margin="0 0 0 6" />
                                     <ItemsControl ItemsSource="{Binding DoneView}">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Border Background="White" Padding="10" Margin="0,0,0,5"
+                                                <Border Background="White"
+                                                        Padding="10"
+                                                        Margin="0 0 0 5"
                                                         CornerRadius="4"
                                                         MouseMove="Task_MouseMove">
-                                                    <TextBlock Text="{Binding Title}"/>
+                                                    <TextBlock Text="{Binding Title}" />
                                                 </Border>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
@@ -118,12 +195,10 @@
                                 </StackPanel>
                             </Border>
                         </Grid>
-
                     </Expander>
-
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
     </ScrollViewer>
-
+    </DockPanel>
 </Window>

@@ -27,6 +27,20 @@ namespace MyKanbanBoard.ViewModels
             set { _isExpanded = value; OnPropertyChange(); }
         }
 
+        private string _newTaskTitle;
+        public string NewTaskTitle
+        {
+            get => _newTaskTitle;
+            set
+            {
+                _newTaskTitle = value;
+                OnPropertyChange();
+                AddTaskCommand?.RaiseCanExecuteChanged();
+            }
+        }
+
+        public RelayCommand AddTaskCommand { get; }
+
         public UserStoryViewModel(string title)
         {
             Title = title;
@@ -37,6 +51,19 @@ namespace MyKanbanBoard.ViewModels
             DoneView = CreateFilteredView(TaskStatus.Done);
 
             Tasks.CollectionChanged += Tasks_CollectionChanged;
+
+            AddTaskCommand = new RelayCommand(
+            execute: _ =>
+            {
+                var titleToUse = (NewTaskTitle ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(titleToUse))
+                    return;
+
+                Tasks.Add(new TaskViewModel(titleToUse, TaskStatus.ToDo));
+                NewTaskTitle = "";          // czyści pole
+                RefreshAll();               // odśwież widoki/liczniki
+            },
+            canExecute: _ => !string.IsNullOrWhiteSpace(NewTaskTitle));
         }
 
         private ICollectionView CreateFilteredView(TaskStatus status)

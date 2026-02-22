@@ -61,5 +61,15 @@ namespace MyKanbanBoard.Views
             var board = DataContext as BoardViewModel;
             board?.MoveTask(task, targetStory, targetStatus);
         }
+
+        private void NewTaskTitle_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter) return;
+
+            var tb = sender as FrameworkElement;
+            var story = tb?.DataContext as UserStoryViewModel;
+            if (story?.AddTaskCommand?.CanExecute(null) == true)
+                story.AddTaskCommand.Execute(null);
+        }
     }
 }
