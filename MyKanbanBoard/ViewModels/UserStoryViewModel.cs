@@ -1,9 +1,12 @@
-﻿using MyKanbanBoard.Models;
+﻿using MyKanbanBoard.Data;
+using MyKanbanBoard.Models;
+using MyKanbanBoard.Models.Entities;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
 
 
@@ -11,6 +14,7 @@ namespace MyKanbanBoard.ViewModels
 {
     public class UserStoryViewModel : ViewModelBase
     {
+        public int Id { get; set; }
         public string Title { get; }
 
         public ObservableCollection<TaskViewModel> Tasks { get; } = new ObservableCollection<TaskViewModel>();
@@ -53,17 +57,36 @@ namespace MyKanbanBoard.ViewModels
             Tasks.CollectionChanged += Tasks_CollectionChanged;
 
             AddTaskCommand = new RelayCommand(
-            execute: _ =>
-            {
-                var titleToUse = (NewTaskTitle ?? "").Trim();
-                if (string.IsNullOrWhiteSpace(titleToUse))
-                    return;
+     execute: _ =>
+     {
+         var titleToUse = (NewTaskTitle ?? "").Trim();
+         if (string.IsNullOrWhiteSpace(titleToUse))
+             return;
 
-                Tasks.Add(new TaskViewModel(titleToUse, TaskStatus.ToDo));
-                NewTaskTitle = "";          // czyści pole
-                RefreshAll();               // odśwież widoki/liczniki
-            },
-            canExecute: _ => !string.IsNullOrWhiteSpace(NewTaskTitle));
+         int newId;
+
+         using (var db = KanbanDbContextFactory.Create())
+         {
+             var entity = new TaskEntity
+             {
+                 Title = titleToUse,
+                 Status = TaskStatus.ToDo,
+                 UserStoryId = this.Id
+             };
+
+             db.Tasks.Add(entity);
+             db.SaveChanges();
+
+             newId = entity.Id;
+         }
+
+         Tasks.Add(new TaskViewModel(titleToUse, TaskStatus.ToDo) { Id = newId });
+
+         NewTaskTitle = "";
+         RefreshAll();
+     },
+     canExecute: _ => !string.IsNullOrWhiteSpace(NewTaskTitle)
+ );
         }
 
         private ICollectionView CreateFilteredView(TaskStatus status)

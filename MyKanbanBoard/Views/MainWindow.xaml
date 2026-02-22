@@ -17,34 +17,79 @@
 
     <DockPanel>
 
-        <!-- TOP BAR: add story -->
         <Border DockPanel.Dock="Top" Padding="10" Background="#FAFAFA">
-            <DockPanel LastChildFill="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="10"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <TextBlock Text="User Stories"
-                       FontWeight="Bold"
-                       VerticalAlignment="Center"
-                       Margin="0,0,10,0"/>
+                <!-- RZĄD 1: Sprint -->
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="260"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
 
-                <Button Content="Add"
-                    Width="70"
-                    Margin="8,0,0,0"
-                    DockPanel.Dock="Right"
-                    Command="{Binding AddStoryCommand}"/>
+                    <ComboBox Grid.Column="0"
+                      ItemsSource="{Binding Sprints}"
+                      SelectedItem="{Binding ActiveSprint}"
+                      DisplayMemberPath="Name"
+                      Height="28"/>
 
-                <TextBox Text="{Binding NewStoryTitle, UpdateSourceTrigger=PropertyChanged}"
+                    <TextBox Grid.Column="2"
+                     Text="{Binding NewSprintName, UpdateSourceTrigger=PropertyChanged}"
                      Height="28"
-                     VerticalAlignment="Center">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding AddStoryCommand}"/>
-                    </TextBox.InputBindings>
-                </TextBox>
+                     VerticalContentAlignment="Center"
+                     Margin="0,0,8,0">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding AddSprintCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
 
-            </DockPanel>
+                    <Button Grid.Column="3"
+                    Content="Add Sprint"
+                    Height="28"
+                    Command="{Binding AddSprintCommand}"/>
+                </Grid>
+
+                <!-- RZĄD 2: User Story -->
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="260"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="90"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0"
+                       VerticalAlignment="Center"
+                       Text="{Binding ActiveSprint.Name, StringFormat=Active: {0}}"
+                       Opacity="0.8"/>
+
+                    <TextBox Grid.Column="2"
+                     Text="{Binding NewStoryTitle, UpdateSourceTrigger=PropertyChanged}"
+                     Height="28"
+                     VerticalContentAlignment="Center"
+                     Margin="0,0,8,0">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding AddStoryCommand}"/>
+                        </TextBox.InputBindings>
+                    </TextBox>
+
+                    <Button Grid.Column="3"
+                    Content="Add Story"
+                    Height="28"
+                    Command="{Binding AddStoryCommand}"/>
+                </Grid>
+            </Grid>
         </Border>
 
         <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <ItemsControl ItemsSource="{Binding Stories}">
+            <ItemsControl ItemsSource="{Binding ActiveSprint.Stories}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
 
